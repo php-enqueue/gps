@@ -32,7 +32,7 @@ class GpsMessageTest extends TestCase
         //guard
         $this->assertNotEmpty($json);
 
-        $unserializedMessage = GpsMessage::jsonUnserialize($json);
+        $unserializedMessage = GpsMessage::messageUnserialize($json, []);
 
         $this->assertInstanceOf(GpsMessage::class, $unserializedMessage);
         $this->assertEquals($message, $unserializedMessage);
@@ -42,7 +42,7 @@ class GpsMessageTest extends TestCase
     {
         $json = '{"body":"theBody","properties":{"thePropFoo":"thePropFooVal"},"headers":{"theHeaderFoo":"theHeaderFooVal"}}';
 
-        $unserializedMessage = GpsMessage::jsonUnserialize($json);
+        $unserializedMessage = GpsMessage::messageUnserialize($json, []);
 
         $this->assertInstanceOf(GpsMessage::class, $unserializedMessage);
         $decoded = json_decode($json, true);
@@ -55,7 +55,7 @@ class GpsMessageTest extends TestCase
     {
         $json = '{"theBodyPropFoo":"theBodyPropVal"}';
 
-        $unserializedMessage = GpsMessage::jsonUnserialize($json);
+        $unserializedMessage = GpsMessage::messageUnserialize($json, []);
 
         $this->assertInstanceOf(GpsMessage::class, $unserializedMessage);
         $this->assertEquals($json, $unserializedMessage->getBody());
@@ -68,6 +68,25 @@ class GpsMessageTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The malformed json given.');
 
-        GpsMessage::jsonUnserialize('{]');
+        GpsMessage::messageUnserialize('{]', []);
+    }
+
+    public function testCouldBeUnserializedFromProtobuf()
+    {
+        $protobufMessage = '2test+customer_6115118118117248@example.com"4test+customer_611511118118117248@example.com*&App\Tests\Entity\Entity497709';
+
+        $message = new GpsMessage(
+            $protobufMessage,
+            [
+                'ce-datacontenttype' => 'application/protobuf',
+            ]
+        );
+
+        $unserializedMessage = GpsMessage::messageUnserialize($protobufMessage, [
+            'ce-datacontenttype' => 'application/protobuf',
+        ]);
+
+        $this->assertInstanceOf(GpsMessage::class, $unserializedMessage);
+        $this->assertEquals($message, $unserializedMessage);
     }
 }
