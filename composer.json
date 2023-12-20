@@ -1,5 +1,5 @@
 {
-    "name": "enqueue/gps",
+    "name": "ahmedkhan847/gps",
     "type": "library",
     "description": "Message Google Cloud Pub/Sub Transport",
     "keywords": ["messaging", "queue", "google", "pubsub"],
