@@ -32,7 +32,7 @@ class GpsMessageTest extends TestCase
         //guard
         $this->assertNotEmpty($json);
 
-        $unserializedMessage = GpsMessage::jsonUnserialize($json);
+        $unserializedMessage = GpsMessage::messageUnserialize($json, []);
 
         $this->assertInstanceOf(GpsMessage::class, $unserializedMessage);
         $this->assertEquals($message, $unserializedMessage);
@@ -42,7 +42,7 @@ class GpsMessageTest extends TestCase
     {
         $json = '{"body":"theBody","properties":{"thePropFoo":"thePropFooVal"},"headers":{"theHeaderFoo":"theHeaderFooVal"}}';
 
-        $unserializedMessage = GpsMessage::jsonUnserialize($json);
+        $unserializedMessage = GpsMessage::messageUnserialize($json, []);
 
         $this->assertInstanceOf(GpsMessage::class, $unserializedMessage);
         $decoded = json_decode($json, true);
@@ -55,7 +55,7 @@ class GpsMessageTest extends TestCase
     {
         $json = '{"theBodyPropFoo":"theBodyPropVal"}';
 
-        $unserializedMessage = GpsMessage::jsonUnserialize($json);
+        $unserializedMessage = GpsMessage::messageUnserialize($json, []);
 
         $this->assertInstanceOf(GpsMessage::class, $unserializedMessage);
         $this->assertEquals($json, $unserializedMessage->getBody());
@@ -68,6 +68,6 @@ class GpsMessageTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The malformed json given.');
 
-        GpsMessage::jsonUnserialize('{]');
+        GpsMessage::messageUnserialize('{]', []);
     }
 }

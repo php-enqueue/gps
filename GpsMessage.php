@@ -154,14 +154,28 @@ class GpsMessage implements Message, \JsonSerializable
         ];
     }
 
-    public static function jsonUnserialize(string $json): self
+    public static function messageUnserialize(string $message, array $attributes): self
+    {
+        if ($attributes['ce-datacontenttype'] === 'application/protobuf') {
+            return self::protobufUnserialize($message, $attributes);
+        }
+
+        return self::jsonUnserialize($message, $attributes);
+    }
+
+    private static function jsonUnserialize(string $json, array $attributes): self
     {
         $data = json_decode($json, true);
         if (\JSON_ERROR_NONE !== json_last_error()) {
             throw new \InvalidArgumentException(sprintf('The malformed json given. Error %s and message %s', json_last_error(), json_last_error_msg()));
         }
 
-        return new self($data['body'] ?? $json, $data['properties'] ?? [], $data['headers'] ?? []);
+        return new self($data['body'] ?? $json, $data['properties'] ?? $attributes, $data['headers'] ?? []);
+    }
+
+    private static function protobufUnserialize(string $protobuf, array $attributes): self
+    {
+        return new self($protobuf,  $data['properties'] ?? $attributes, $data['headers'] ?? []);
     }
 
     public function getNativeMessage(): ?GoogleMessage
