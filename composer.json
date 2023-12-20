@@ -1,5 +1,5 @@
 {
-  "name": "enqueue/gpsprotobuf",
+  "name": "enqueues/gpsprotobuf",
   "type": "library",
   "description": "Message Google Cloud Pub/Sub Transport",
   "keywords": [
